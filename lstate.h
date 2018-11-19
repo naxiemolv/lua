@@ -79,7 +79,7 @@ typedef struct stringtable {
   int nuse;  /* number of elements */
   int size;
 } stringtable;
-
+// //所有的 string 则以 stringtable 结构保存在 stringtable strt 域。string 的值类型为 TString ，它和其它 GCObject 一样，拥有 CommonHeader 。但需要注意，CommonHeader 中的 next 域却和其它类型的单向链表意义不同。它被挂接在 stringtable 这个 hash 表中。
 
 /*
 ** Information about a call.
@@ -140,6 +140,11 @@ typedef struct CallInfo {
 /*
 ** 'global state', shared by all threads of this state
 */
+// https://blog.codingnow.com/2011/03/lua_gc_1.html
+// 一个完整的 lua 虚拟机在运行时，可有多个 lua_State ，即多个 thread 。它们会共享一些数据。这些数据放在 global_State *l_G 域中。其中自然也包括所有 GCobject 的链表。
+
+//所有的 string 则以 stringtable 结构保存在 stringtable strt 域。string 的值类型为 TString ，它和其它 GCObject 一样，拥有 CommonHeader 。但需要注意，CommonHeader 中的 next 域却和其它类型的单向链表意义不同。它被挂接在 stringtable 这个 hash 表中。
+
 typedef struct global_State {
   lua_Alloc frealloc;  /* function to reallocate memory */
   void *ud;         /* auxiliary data to 'frealloc' */
@@ -191,6 +196,7 @@ typedef struct global_State {
 /*
 ** 'per thread' state
 */
+// 这是写 C 和 Lua 交互时用的最多的数据类型。顾名思义，它表示了 lua vm 的某种状态。从实现上来说，更接近 lua 的一个 thread 以及其间包含的相关数据（堆栈、环境等等）。事实上，一个 lua_State 也是一个类型为 thread 的 GCObject 。
 struct lua_State {
   CommonHeader;
   unsigned short nci;  /* number of items in 'ci' list */

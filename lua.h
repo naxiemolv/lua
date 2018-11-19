@@ -54,7 +54,7 @@
 
 
 typedef struct lua_State lua_State;
-
+// 这是写 C 和 Lua 交互时用的最多的数据类型。顾名思义，它表示了 lua vm 的某种状态。从实现上来说，更接近 lua 的一个 thread 以及其间包含的相关数据（堆栈、环境等等）。事实上，一个 lua_State 也是一个类型为 thread 的 GCObject 。
 
 /*
 ** basic types

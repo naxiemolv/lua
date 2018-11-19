@@ -981,6 +981,7 @@ static void f_call (lua_State *L, void *ud) {
 
 LUA_API int lua_pcallk (lua_State *L, int nargs, int nresults, int errfunc,
                         lua_KContext ctx, lua_KFunction k) {
+// 调用开始
   struct CallS c;
   int status;
   ptrdiff_t func;

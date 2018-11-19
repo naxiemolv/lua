@@ -239,6 +239,14 @@ typedef StackValue *StkId;  /* index to stack elements */
 ** Common Header for all collectable objects (in macro form, to be
 ** included in other objects)
 */
+
+// 所有的 GCObject 都有一个相同的数据头
+// 所有的 GCObject 都用一个单向链表串了起来。每个对象都以 tt 来识别其类型。marked 域用于标记清除的工作。
+// 标记清除算法是一种简单的 GC 算法。每次 GC 过程，先以若干根节点开始，逐个把直接以及间接和它们相关的节点都做上标记。对于 Lua ，这个过程很容易实现。因为所有 GObject 都在同一个链表上，当标记完成后，遍历这个链表，把未被标记的节点一一删除即可。
+
+// Lua 在实际实现时，其实不只用一条链表维系所有 GCObject 。这是因为 string 类型有其特殊性。所有的 string 放在一张大的 hash 表中。它需要保证系统中不会有值相同的 string 被创建两份。顾 string 是被单独管理的，而不串在 GCObject 的链表中。
+
+// https://blog.codingnow.com/2011/03/lua_gc_1.html
 #define CommonHeader	struct GCObject *next; lu_byte tt; lu_byte marked
 
 
@@ -338,6 +346,8 @@ typedef struct GCObject {
 ** Header for string value; string bytes follow the end of this structure
 ** (aligned according to 'UTString'; see next).
 */
+
+//所有的 string 则以 stringtable 结构保存在 stringtable strt 域。string 的值类型为 TString ，它和其它 GCObject 一样，拥有 CommonHeader 。但需要注意，CommonHeader 中的 next 域却和其它类型的单向链表意义不同。它被挂接在 stringtable 这个 hash 表中。
 typedef struct TString {
   CommonHeader;
   lu_byte extra;  /* reserved words for short strings; "has hash" for longs */
